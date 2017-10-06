@@ -298,6 +298,12 @@ mnemo	("std",		standard2,	0xcd)
 endmnemos
 
 
+startmnemos(hd6303)
+
+mnemo	("xgdx",	single,		0x18)
+
+endmnemos
+
 void
 init6800(int code)
 {
@@ -308,4 +314,8 @@ init6800(int code)
 	bindvocabulary(m6800);			/* add 6800 mnemos	      */
 	if (code==1)
 		bindvocabulary(m6801);		/* add 6801 mnemos if needed  */
+	if (code==2) {
+		bindvocabulary(m6801);		/* add 6801 mnemos if needed  */
+		bindvocabulary(hd6303);		/* add hd6303 mnemos if needed  */
+  }
 }

@@ -32,6 +32,7 @@ startcpu
 newcpu("6800"	,init6800,0)    /* Motorola 8 bit family father  */
 newcpu("6801"	,init6800,1)    /* 6800+rom+I/Os+16bits ALU      */
 newcpu("6803"   ,init6800,1)    /* ROMless 6801                  */
+newcpu("hd6303"  ,init6800,2)    /* 6801 + xgdx                    */
 newcpu("6500"   ,init6502,0)    /* First 6502 procs, without ROR */
 newcpu("6502"	,init6502,1)    /* Standard 6502 (Apple,Cbm..)   */
 newcpu("65C02"	,init6502,2)    /* CMOS 6502, ext. instr. set    */
