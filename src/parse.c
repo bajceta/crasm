@@ -181,12 +181,18 @@ struct result *
 parse(char *expr)
 {
 	char *dummy;
-
+  
+  /* printf("parse %d\n", *expr); */
+  /* printf(expr); */
+  /* printf("\n"); */
 	if ( filter(expr,"(?)",&dummy) )
 		warning("external parenthesis ignored");
 	reverse(expr);
+  /* printf("reverse 1\n"); */
 	parse2(expr,&calcresult);
+  /* printf("parse2 \n"); */
 	reverse(expr);
+  /* printf("reverse 2\n"); */
 	return &calcresult;
 
 }

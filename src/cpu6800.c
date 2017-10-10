@@ -65,10 +65,10 @@ single(int code, char *label, char *mnemo, char *oper) /* single byte instructio
 static struct addmodes 				/* addressing modes filters   */
 {	char *filt;				/* and code shifts	      */
 	int  add;      } addmodes[] = {
-	{ "#_?",   0x00,},
-	{ ",_x",   0x20,},
-	{ "?_,_x", 0x20,},
-	{ "?",	   0x30,},
+	{ "#_?",     0x00,},
+	{ ",_x",     0x20,},
+	{ "?_,_x",   0x20,},
+	{ "?",	     0x30,},
 	{ NULL }
 };
 
@@ -82,12 +82,17 @@ findmode(char *oper, int *pvalue)    /* test operands	      */
 	char *address;
 	
 	address="0";
-	
+  /* warning(oper);	 */
+  /* printf("%d\n", *pvalue); */
 	for ( q=addmodes; q->filt ; q++ )
 		if (oper && filter(oper,q->filt,&address) )
-		{	r=parse(address);
+		{	
+      /* printf("oper: %s\n", oper);  */
+      /* printf("address: %s\n", address);  */
+      r=parse(address);
 			checktype(r,L_ABSOLUTE);
 			*pvalue=r->value;
+      /* printf("pval: %d\n", *pvalue);  */
 			if ( q->add==0x30 )
 				if ( !(r->flags & FORWARD) &&
 				     !(r->value & 0xff00)     )
@@ -120,6 +125,46 @@ codemode(int code, int add, int value)	        /* generate code, given	base  */
 	}
 }
 
+static int
+immediate(int code, char *labe, char *mnemo, char *oper) {
+	register int add;
+	int value;
+  int value2;
+  
+  char *first; 
+  char *s2;
+  char *s3;
+  char *rest;
+  char *separator = ",";
+  register struct result *r;
+
+  first = strtok(oper, separator);
+  /* printf("first %s\n", first); */
+
+  s2 = strtok(NULL, separator);
+  s3 = strtok(NULL, separator);
+  /* printf("s2 %s\n", s2); */
+  /* printf("s3 %s\n", s3); */
+  
+  /* printf("first %s\n", first); */
+  if (s3 != NULL) {
+    rest = malloc(strlen(s2) + strlen(s3) + 1);
+    strcpy(rest, s2);
+    strcat(rest, ",");
+    strcat(rest, s3);
+  } else {
+    rest = s2;
+  }
+  
+  /* printf("rest %s\n", rest); */
+  findmode(first,&value);
+  add = findmode (rest,&value2); 
+  add = add - 16;  
+  insert8(code-add);
+  insert8(value);
+  insert8(value2);
+	return 0;
+}
 
 static int
 standard(int code, char *label, char *mnemo, char *oper) /* all addressing modes */
@@ -183,7 +228,7 @@ mnemo	("ble",		branch, 	0x2f)
 mnemo	("nop",		single,		0x01)	/* single byte instructions   */
 mnemo	("rti",		single,		0x3b)
 mnemo	("rts",		single,		0x39)
-mnemo	("swi",		single,		0x3f)
+mnemo	("swi",		standard,		0x3f)
 mnemo	("wai",		single,		0x3e)
 mnemo	("aba",		single,		0x1b)
 mnemo	("clra",	single,		0x4f)
@@ -301,6 +346,10 @@ endmnemos
 startmnemos(hd6303)
 
 mnemo	("xgdx",	single,		0x18)
+mnemo	("aim",	immediate,		0x71)
+mnemo	("oim",	immediate,		0x72)
+mnemo	("eim",	immediate,		0x75)
+mnemo	("tim",	immediate,		0x7b)
 
 endmnemos
 
